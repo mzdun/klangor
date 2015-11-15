@@ -32,5 +32,7 @@
 *.VC.*
 *.user
 
-bin
-int
+bin/
+int/
+build/
+CMakeFiles/
