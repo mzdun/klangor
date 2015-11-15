@@ -5,30 +5,30 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 link_directories(${LIBCLANG_LIBRARIES})
   
 add_executable(check-override
-	src/main.cc
-	src/clang-data.cc
-	src/method.cc
-	src/report.cc
+	main.cc
+	clang-data.cc
+	method.cc
+	report.cc
 
-	src/Cursor.cc
-	src/Diagnostic.cc
-	src/DiagnosticSet.cc
-	src/Index.cc
-	src/String.cc
-	src/TranslationUnit.cc
+	Cursor.cc
+	Diagnostic.cc
+	DiagnosticSet.cc
+	Index.cc
+	String.cc
+	TranslationUnit.cc
 
-	src/clang-data.hh
-	src/cursor_type_x.inl
-	src/method.hh
-	src/report.hh
+	clang-data.hh
+	cursor_type_x.inl
+	method.hh
+	report.hh
 
-	src/clang-cc-base.hh
-	src/Cursor.hh
-	src/Diagnostic.hh
-	src/DiagnosticSet.hh
-	src/Index.hh
-	src/String.hh
-	src/TranslationUnit.hh
+	clang-cc-base.hh
+	Cursor.hh
+	Diagnostic.hh
+	DiagnosticSet.hh
+	Index.hh
+	String.hh
+	TranslationUnit.hh
 	)
 	
 target_link_libraries(check-override ${LIBCLANG_LIBRARY})
