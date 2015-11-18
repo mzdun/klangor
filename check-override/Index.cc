@@ -23,11 +23,13 @@ TranslationUnit IndexView::parse(const char *source_filename, const char *const 
     return TranslationUnit { clang_parseTranslationUnit(get(), source_filename, command_line_args, num_command_line_args, unsaved_files, num_unsaved_files, options) };
 }
 
+#if CINDEX_VERSION > CINDEX_VERSION_ENCODE(0, 23)
 TranslationUnit IndexView::parse(const char *source_filename, const char *const *command_line_args, int num_command_line_args, CXUnsavedFile *unsaved_files, unsigned num_unsaved_files, unsigned options, CXErrorCode& ec) const
 {
     CXTranslationUnit tu;
     ec = clang_parseTranslationUnit2(get(), source_filename, command_line_args, num_command_line_args, unsaved_files, num_unsaved_files, options, &tu);
     return TranslationUnit { tu };
 }
+#endif
 
 }

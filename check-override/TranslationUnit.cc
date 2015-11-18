@@ -13,12 +13,14 @@ TranslationUnit TranslationUnit::create(const IndexView& index, const char *sour
         ) };
 }
 
+#if CINDEX_VERSION > CINDEX_VERSION_ENCODE(0, 23)
 TranslationUnit TranslationUnit::create(const IndexView& index, const char* ast_filename, CXErrorCode& ec)
 {
     CXTranslationUnit tu;
     ec = clang_createTranslationUnit2(index.get(), ast_filename, &tu);
     return TranslationUnit { tu };
 }
+#endif
 
 TranslationUnit TranslationUnit::create(const IndexView& index, const char* ast_filename)
 {

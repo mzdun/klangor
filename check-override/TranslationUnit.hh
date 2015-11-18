@@ -30,7 +30,9 @@ public:
     }
 
     static TranslationUnit create(const IndexView& index, const char *source_filename, int num_clang_command_line_args, const char * const *clang_command_line_args, unsigned num_unsaved_files, CXUnsavedFile *unsaved_files);
+#if CINDEX_VERSION > CINDEX_VERSION_ENCODE(0, 23)
     static TranslationUnit create(const IndexView& index, const char* ast_filename, CXErrorCode& ec);
+#endif
     static TranslationUnit create(const IndexView& index, const char* ast_filename);
 
 };

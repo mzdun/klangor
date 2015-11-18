@@ -101,8 +101,7 @@ void visit_children(CXTranslationUnit tu, const clang::Cursor& cursor, Report& o
 int main(int argc, char* argv[])
 {
     auto index = clang::Index::create(0, 0);
-    CXErrorCode ec;
-    auto tu = index.parse(nullptr, argv, argc, nullptr, 0, CXTranslationUnit_SkipFunctionBodies, ec);
+    auto tu = index.parse(nullptr, argv, argc, nullptr, 0, CXTranslationUnit_SkipFunctionBodies);
 
     Report output { Printer::stdio() };
 
