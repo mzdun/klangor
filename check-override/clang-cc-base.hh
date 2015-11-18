@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <clang-c/Index.h>
 
 namespace clang {
 
@@ -37,7 +38,7 @@ template <typename Final, typename ViewT>
 class Handle : public ViewT
 {
     using clang_t = typename ViewT::native;
-    using clang_base_t = clang_base_t<clang_t>;
+    using clang_base_t = clang::clang_base_t<clang_t>;
 
     struct Deleter {
 

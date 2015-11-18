@@ -1,4 +1,5 @@
 #include "String.hh"
+#include <string.h>
 
 namespace clang {
 String::String(const CXString& data)

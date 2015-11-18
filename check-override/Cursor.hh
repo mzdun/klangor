@@ -1,6 +1,5 @@
 #pragma once
 #include "clang-cc-base.hh"
-#include <clang-c\Index.h>
 
 namespace clang {
 

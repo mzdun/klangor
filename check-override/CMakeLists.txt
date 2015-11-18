@@ -1,7 +1,7 @@
 find_package(LibClang REQUIRED)
 
 include_directories(${LIBCLANG_INCLUDE_DIRS})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 link_directories(${LIBCLANG_LIBRARIES})
   
 add_executable(check-override
@@ -32,3 +32,4 @@ add_executable(check-override
 	)
 	
 target_link_libraries(check-override ${LIBCLANG_LIBRARY})
+set_property(TARGET check-override PROPERTY CXX_STANDARD 14)
