@@ -28,11 +28,11 @@ const char* cursor_kind(CXCursorKind kind)
 
 void visit_children(CXTranslationUnit tu, const clang::Cursor& cursor, Report& output, int indent);
 
-void visit_method(CXTranslationUnit tu, const clang::Cursor& cursor, Report& output);
+void visit_method(CXTranslationUnit tu, const clang::Cursor& cursor, CXCursorKind parent, Report& output);
 
 auto make_visitor(CXTranslationUnit tu, Report& output, int indent)
 {
-    return [=, &output](const clang::Cursor& cursor, const clang::Cursor&) {
+    return [=, &output](const clang::Cursor& cursor, const clang::Cursor& parent) {
 #ifdef PRINT_TREE
         if (indent)
             std::fprintf(stderr, "%*c", indent, ' ');
@@ -40,8 +40,7 @@ auto make_visitor(CXTranslationUnit tu, Report& output, int indent)
 #endif // PRINT_TREE
 
         if (cursor.getKind() == CXCursor_CXXMethod) {
-            // visit_children(tu, cursor, indent + 4);
-            visit_method(tu, cursor, output);
+            visit_method(tu, cursor, parent.getKind(), output);
             return CXChildVisit_Continue;
         }
 
@@ -50,8 +49,17 @@ auto make_visitor(CXTranslationUnit tu, Report& output, int indent)
     };
 }
 
-void visit_method(CXTranslationUnit tu, const clang::Cursor& cursor, Report& output)
+void visit_method(CXTranslationUnit tu, const clang::Cursor& cursor, CXCursorKind parent, Report& output)
 {
+    switch (parent) {
+    case CXCursor_StructDecl:
+    case CXCursor_UnionDecl:
+    case CXCursor_ClassDecl:
+        break;
+    default:
+        return;
+    };
+
     if (!clang_CXXMethod_isVirtual(cursor.get()))
         return;
 

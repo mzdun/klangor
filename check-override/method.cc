@@ -13,7 +13,7 @@ bool has_override_attr(const clang::Cursor& cursor)
 {
     bool ret = false;
     cursor.visitChildren([&](const clang::Cursor& cursor, const clang::Cursor&) {
-        if (cursor.getKind() == CXCursor_CXXOverrideAttr) {
+        if (cursor.getKind() == CXCursor_CXXOverrideAttr || cursor.getKind() == CXCursor_CXXFinalAttr) {
             ret = true;
             return CXChildVisit_Break;
         }
