@@ -2,11 +2,10 @@
 
 #include "Diagnostic.hh"
 #include "clang-data.hh"
+#include "printer.hh"
 
 #include <cstdio>
 #include <vector>
-
-#define MSC_LINES
 
 enum class severity {
     note,
@@ -16,10 +15,10 @@ enum class severity {
 };
 
 class Report {
-    std::FILE* out;
+    std::unique_ptr<Printer> out;
     std::vector<std::pair<severity, uintmax_t>> stats;
 public:
-    Report(std::FILE* out) : out { out }
+    Report(std::unique_ptr<Printer> out) : out { std::move(out) }
     {
     }
 

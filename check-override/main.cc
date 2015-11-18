@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
     CXErrorCode ec;
     auto tu = index.parse(nullptr, argv, argc, nullptr, 0, CXTranslationUnit_SkipFunctionBodies, ec);
 
-    Report output { stderr };
+    Report output { Printer::stdio() };
 
     bool has_errors = 0;
     for (auto diag : tu.getDiagnosticSet()) {

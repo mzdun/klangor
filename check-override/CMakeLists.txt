@@ -9,6 +9,7 @@ add_executable(check-override
 	clang-data.cc
 	method.cc
 	report.cc
+	printer.cc
 
 	Cursor.cc
 	Diagnostic.cc
@@ -21,6 +22,7 @@ add_executable(check-override
 	cursor_type_x.inl
 	method.hh
 	report.hh
+	printer.hh
 
 	clang-cc-base.hh
 	Cursor.hh

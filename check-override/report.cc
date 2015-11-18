@@ -7,6 +7,22 @@
 #include <string>
 #include <tuple>
 
+#ifdef _MSC_VER
+#define MSC_LINES
+#endif
+
+#if (__cplusplus < 201402L) && !defined _MSC_VER
+namespace std {
+inline string to_string(unsigned int val)
+{
+    // convert unsigned int to string
+    char buffer[21];
+    int len = sprintf(buffer, "%u", val);
+    return string(buffer, len);
+}
+};
+#endif
+
 namespace {
 std::string code(const diagnostic_location& diag)
 {
@@ -49,21 +65,22 @@ void Report::report(const diagnostic_location& diag, severity sev, const char* m
 {
     if (!diag.loc.fname.empty()) {
 #if defined(MSC_LINES)
-        std::fprintf(out, "%s(%u): ", diag.loc.fname.c_str(), diag.loc.line);
+        auto loc = diag.loc.fname + "(" + std::to_string(diag.loc.line) + "): ";
 #else
-        std::fprintf(out, "%s:%u:%u: ", diag.loc.fname.c_str(), diag.loc.line, diag.loc.column);
+        auto loc = diag.loc.fname + ":" + std::to_string(diag.loc.line) + ":" + std::to_string(diag.loc.column) + ": ";
 #endif
+        out->out(print::source_location, loc.c_str());
     }
 
     switch (sev) {
-    case severity::note: std::fprintf(out, "note: "); break;
-    case severity::warning: std::fprintf(out, "warning: "); break;
-    case severity::error: std::fprintf(out, "error: "); break;
-    case severity::fatal: std::fprintf(out, "fatal error: "); break;
+    case severity::note: out->out(print::note, "note: "); break;
+    case severity::warning: out->out(print::warning, "warning: "); break;
+    case severity::error: out->out(print::error, "error: "); break;
+    case severity::fatal: out->out(print::error, "fatal error: "); break;
     }
 
-    std::fputs(msg, out);
-    std::fputc('\n', out);
+    out->out(print::message, msg);
+    out->endl();
 
     if (diag.loc.fname.empty())
         return;
@@ -71,10 +88,15 @@ void Report::report(const diagnostic_location& diag, severity sev, const char* m
     // test loc.fname == actual; (absolute/canonical) - if not, actual symbol might be somewhere else...
 
     auto line = code(diag);
-    std::fprintf(stdout, "%s\n", line.c_str());
+    out->out(print::code, line.c_str());
+    out->endl();
+
     std::string prefix, tail;
     std::tie(prefix, tail) = build_carret(diag, line);
-    std::fprintf(stdout, "%s^%s\n", prefix.c_str(), tail.c_str());
+    out->out(print::supplemental, prefix.c_str());
+    out->out(print::caret, "^");
+    out->out(print::caret_tail, tail.c_str());
+    out->endl();
 }
 
 bool Report::report(const clang::Diagnostic& diag)
