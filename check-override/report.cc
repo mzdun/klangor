@@ -11,18 +11,6 @@
 #define MSC_LINES
 #endif
 
-#if (__cplusplus < 201402L) && !defined _MSC_VER
-namespace std {
-inline string to_string(unsigned int val)
-{
-    // convert unsigned int to string
-    char buffer[21];
-    int len = sprintf(buffer, "%u", val);
-    return string(buffer, len);
-}
-};
-#endif
-
 namespace {
 std::string code(const diagnostic_location& diag)
 {
@@ -39,23 +27,35 @@ std::string code(const diagnostic_location& diag)
     return line;
 }
 
-std::tuple<std::string, std::string> build_carret(const diagnostic_location& diag, const std::string& s)
+std::tuple<std::string, std::string, bool> build_carret(const diagnostic_location& diag, const std::string& s)
 {
-    std::tuple<std::string, std::string> out;
+    std::tuple<std::string, std::string, bool> out;
+
+    auto start = diag.extent.start.column;
+    auto end = diag.extent.end.column;
+    if (end <= start) {
+        if (!end || !start) {
+            std::get<2>(out) = false;
+            return out;
+        }
+        end = start + 1;
+    }
+    std::get<2>(out) = true;
 
     auto c = s.begin();
     auto e = s.end();
 
-    auto counter = diag.extent.start.column - 1;
-    std::get<0>(out).reserve(counter);
-    while (c != e && counter) {
-        std::get<0>(out).push_back(*c == '\t' ? '\t' : ' ');
-        --counter;
-        ++c;
+    if (start) {
+        auto counter = start - 1;
+        std::get<0>(out).reserve(counter);
+        while (c != e && counter) {
+            std::get<0>(out).push_back(*c == '\t' ? '\t' : ' ');
+            --counter;
+            ++c;
+        }
     }
 
-    counter = diag.extent.end.column - diag.extent.start.column - 1;
-    std::get<1>(out).assign(counter, '~');
+    std::get<1>(out).assign(end - start - 1, '~');
 
     return out;
 }
@@ -92,11 +92,14 @@ void Report::report(const diagnostic_location& diag, severity sev, const char* m
     out->endl();
 
     std::string prefix, tail;
-    std::tie(prefix, tail) = build_carret(diag, line);
-    out->out(print::supplemental, prefix.c_str());
-    out->out(print::caret, "^");
-    out->out(print::caret_tail, tail.c_str());
-    out->endl();
+    bool present = false;
+    std::tie(prefix, tail, present) = build_carret(diag, line);
+    if (present) {
+        out->out(print::supplemental, prefix.c_str());
+        out->out(print::caret, "^");
+        out->out(print::caret_tail, tail.c_str());
+        out->endl();
+    }
 }
 
 bool Report::report(const clang::Diagnostic& diag)

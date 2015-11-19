@@ -8,7 +8,6 @@
 #include <vector>
 #include <tuple>
 
-
 bool has_override_attr(const clang::Cursor& cursor)
 {
     bool ret = false;
